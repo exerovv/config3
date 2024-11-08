@@ -1,6 +1,7 @@
 import sys
 import xml.etree.ElementTree as ET
 import re
+import xml.dom.minidom
 
 COMMENT_LINE = r"::.*"
 COMMENT_BLOCK = r"--\[\[.*?\]\]"
@@ -80,6 +81,13 @@ def main():
     except FileNotFoundError:
         print(f"Error: File '{file_path}' not found.")
         sys.exit(1)
+    try:
+        xml_root = parse_config(input_text)
+        xml_str = ET.tostring(xml_root, encoding='unicode')
+        xml_pretty = xml.dom.minidom.parseString(xml_str).toprettyxml(indent="    ")
+        print(xml_pretty)
+    except SyntaxError as e:
+        print(f"Syntax Error: {e}")
 
 if __name__ == "__main__":
     main()
