@@ -28,13 +28,14 @@ def parse_config(input_text):
         if const_decl:
             name, value = const_decl.groups()
             if re.match(ARRAY, value):
+                values = re.findall(r'"(.*?)"|(\d+|[a-zA-Z_]+)', value)
+                constants[name] = [val[0] if val[0] else val[1] for val in values]
                 array_elem = ET.SubElement(xml_root, "array", name=name)
-                values = re.findall(r'"(.*?)"|(\d+)', value)
-                for val in values:
+                for val in constants[name]:
                     item_elem = ET.SubElement(array_elem, "item")
-                    item_elem.text = val[0] if val[0] else val[1]
+                    item_elem.text = val
             else:
-                constants[name] = value
+                constants[name] = value.strip('"')
                 const_elem = ET.SubElement(xml_root, "constant", name=name)
                 const_elem.text = value.strip('"')
             continue
@@ -46,13 +47,18 @@ def parse_config(input_text):
             if value == "undefined":
                 raise SyntaxError(f"Constant '{name}' is undefined")
             eval_elem = ET.SubElement(xml_root, "evaluation", name=name)
-            eval_elem.text = value
+            if isinstance(value, list):  # If value is a list, output it as an array
+                for item in value:
+                    item_elem = ET.SubElement(eval_elem, "item")
+                    item_elem.text = item
+            else:
+                eval_elem.text = value
             continue
 
         array_match = re.match(ARRAY, line)
         if array_match:
-            values = re.findall(r'"(.*?)"|(\d+)', array_match.group(1))
-            array_elem = ET.SubElement(xml_root, "array")
+            values = re.findall(r'"(.*?)"|(\d+|[a-zA-Z_]+)', array_match.group(1))
+            array_elem = ET.SubElement(xml_root, "array", name="unnamed_array")
             for val in values:
                 item_elem = ET.SubElement(array_elem, "item")
                 item_elem.text = val[0] if val[0] else val[1]
