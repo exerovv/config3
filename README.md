@@ -51,12 +51,19 @@ python main.py C:\Users\rashe\PycharmProjects\cfghw3\db.txt
 Примеры выполнения программы на текстовых примеров из разных предметных областей
 
 db.txt - Конфигурация для базы данных
+
 (def db_host "localhost");
+
 (def db_port 5432);
+
 (def db_params #(ssl enabled max_connections 100));
+
 ?{db_host}
+
 ?{db_port}
+
 ?{db_params}
+
 
 Результат:
 
@@ -64,9 +71,13 @@ db.txt - Конфигурация для базы данных
 
 ui_config - Конфигурация для UI
 (def theme "dark");
+
 (def font_size 12);
+
 --[[ Комментарий:
+
 Этот массив содержит цвета для темы ]]
+
 #(  "black" "grey" "white"  )
 
 Результат:
@@ -75,16 +86,27 @@ ui_config - Конфигурация для UI
 
 
 interface.txt - Конфигурация для интерфейса приложения
+
 :: Однострочный комментарий
+
 (def name "Configuration");
+
 (def settings #( "строка1" 2 #(3 "вложенный массив")));
+
 ?{name}
+
 ?{settings}
+
 --[[
+
 Это многострочный
+
 комментарий
+
 ]]
+
 (def colors #( "красный" "зеленый" "синий" ));
+
 ?{colors}
 
 Результат:
