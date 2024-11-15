@@ -1,17 +1,11 @@
 :: Однострочный комментарий
 (def name "Configuration");
-
-(def version 1);
 (def settings #( "строка1" 2 #(3 "вложенный массив")));
-
 ?{name}
-?{version}
 ?{settings}
-
 --[[
 Это многострочный
 комментарий
 ]]
-
 (def colors #( "красный" "зеленый" "синий" ));
 ?{colors}

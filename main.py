@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 import re
 import xml.dom.minidom
 
-# Определение регулярных выражений
 COMMENT_LINE = r"::.*"
 COMMENT_BLOCK = r"--\[\[.*?\]\]"
 ARRAY = r"#\((.*?)\)"
@@ -12,18 +11,14 @@ NUMBER = r"\b\d+\b"
 CONST_DECLARATION = r"\(def\s+([_a-zA-Z][_a-zA-Z0-9]*)\s+(.*)\);"
 CONST_EVALUATION = r"\?\{([_a-zA-Z][_a-zA-Z0-9]*)\}"
 
-# Словарь для хранения констант
 constants = {}
 
 
 def parse_array(value):
-    """Рекурсивный парсинг массива, поддерживающий вложенные структуры."""
     array_elem = ET.Element("array")
 
-    # Удаляем оболочку массива #( ... )
-    inner_values = value[2:-1].strip()  # Убираем только внешние символы `#(` и `)`
+    inner_values = value[2:-1].strip()
 
-    # Проход по элементам массива с поддержкой вложенности
     pos = 0
     while pos < len(inner_values):
         match_str = re.match(STRING, inner_values[pos:])
@@ -40,7 +35,6 @@ def parse_array(value):
             item_elem.text = match_num.group()
             pos += len(match_num.group())
         elif match_array:
-            # Рекурсивно парсим вложенный массив
             nested_array = parse_array(match_array.group())
             array_elem.append(nested_array)
             pos += len(match_array.group())
@@ -51,7 +45,6 @@ def parse_array(value):
         else:
             raise SyntaxError(f"Неизвестный синтаксис в массиве: {inner_values[pos:]}")
 
-        # Пропуск пробелов и запятых
         while pos < len(inner_values) and inner_values[pos] in ' ,':
             pos += 1
 
@@ -59,7 +52,6 @@ def parse_array(value):
 
 
 def parse_value(value):
-    """Парсит значение, определяя его тип (массив, строка, число)."""
     if re.match(ARRAY, value):
         return parse_array(value)
     elif re.match(STRING, f'"{value}"') or isinstance(value, str):
@@ -77,7 +69,6 @@ def parse_value(value):
 def parse_config(input_text):
     xml_root = ET.Element("config")
 
-    # Удаление комментариев
     input_text = re.sub(COMMENT_LINE, '', input_text)
     input_text = re.sub(COMMENT_BLOCK, '', input_text, flags=re.DOTALL)
     lines = input_text.splitlines()

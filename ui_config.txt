@@ -1,1 +1,6 @@
+(def theme "dark");
+(def font_size 12);
+--[[ Комментарий:
+Этот массив содержит цвета для темы ]]
+#(  "black" "grey" "white"  )
 
