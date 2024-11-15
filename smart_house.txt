@@ -1,8 +1,0 @@
-:: Lighting settings
-(def living_room_brightness 75);
-(def kitchen_brightness 50);
-(def light_modes #(on off dim));
-
-?{living_room_brightness}
-?{kitchen_brightness}
-?{light_modes}
