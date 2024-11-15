@@ -46,7 +46,7 @@ python <файл программы> <путь к файлу с исходным
 
 В моем случае:
 
-python main.py C:\Users\rashe\PycharmProjects\cfghw3\test.txt
+python main.py C:\Users\rashe\PycharmProjects\cfghw3\db.txt
 
 Примеры выполнения программы на текстовых примеров из разных предметных областей
 
@@ -60,26 +60,36 @@ db.txt - Конфигурация для базы данных
 
 Результат:
 
+![db_output.png](db_output.png)
+
 ui_config - Конфигурация для UI
 (def theme "dark");
 (def font_size 12);
 --[[ Комментарий:
 Этот массив содержит цвета для темы ]]
-#( "black" "grey" "white" )
+#(  "black" "grey" "white"  )
 
 Результат:
 
-smart_house.txt - Конфигурация для умного дома
-:: Lighting settings
-(def living_room_brightness 75);
-(def kitchen_brightness 50);
-(def light_modes #(on off dim));
+![ui_output.png](ui_output.png)
 
-?{living_room_brightness}
-?{kitchen_brightness}
-?{light_modes}
+
+interface.txt - Конфигурация для интерфейса приложения
+:: Однострочный комментарий
+(def name "Configuration");
+(def settings #( "строка1" 2 #(3 "вложенный массив")));
+?{name}
+?{settings}
+--[[
+Это многострочный
+комментарий
+]]
+(def colors #( "красный" "зеленый" "синий" ));
+?{colors}
 
 Результат:
+
+![interface_output.png](interface_output.png)
 
 Тестирование:
 Тестирование было проведено с использованием фреймворка unittest в Python. 
@@ -96,6 +106,8 @@ smart_house.txt - Конфигурация для умного дома
 Проверяется, что массивы (в том числе вложенные) правильно преобразуются в XML элементы с нужными подэлементами.
 
 Результаты тестирования:
+
+![test.png](test.png)
 
 Ссылка на репозиторий:
 https://github.com/exerovv/config3
