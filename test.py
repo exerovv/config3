@@ -53,21 +53,21 @@ class TestParseConfig(unittest.TestCase):
         self.assertEqual(items[2].text, "cherry")
 
     def test_parse_nested_array(self):
-        config = '#(  "outer" "outer2" #("inner1" "inner2" ))'
+        config = '(def array #( "outer" #("inner1" "inner2") "outer2" ));'
         xml_root = parse_config(config)
-
         outer_array_elem = xml_root.find(".//array")
         self.assertIsNotNone(outer_array_elem)
         items = outer_array_elem.findall("item")
-
-        self.assertEqual(len(items), 4)
+        self.assertEqual(len(items), 2)
         self.assertEqual(items[0].text, "outer")
-        self.assertEqual(items[2].text, "inner1")
+        self.assertEqual(items[1].text, "outer2")
 
         inner_array_elem = outer_array_elem.find("array")
         self.assertIsNotNone(inner_array_elem)
         inner_items = inner_array_elem.findall("item")
-        self.assertEqual(len(inner_items), 0)
+        self.assertEqual(len(inner_items), 2)
+        self.assertEqual(inner_items[0].text, "inner1")
+        self.assertEqual(inner_items[1].text, "inner2")
 
 if __name__ == "__main__":
     unittest.main()

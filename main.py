@@ -15,8 +15,12 @@ constants = {}
 
 
 def parse_array(value):
+    """
+    Парсинг массивов с поддержкой вложенных массивов и ссылок на константы.
+    """
     array_elem = ET.Element("array")
 
+    # Убираем оболочку массива #( ... )
     inner_values = value[2:-1].strip()
 
     pos = 0
@@ -24,7 +28,7 @@ def parse_array(value):
         match_str = re.match(STRING, inner_values[pos:])
         match_num = re.match(NUMBER, inner_values[pos:])
         match_array = re.match(ARRAY, inner_values[pos:])
-        match_nested_array = re.match(r'#\((.*?)', inner_values[pos:])
+        match_const = re.match(CONST_EVALUATION, inner_values[pos:])
 
         if match_str:
             item_elem = ET.SubElement(array_elem, "item")
@@ -38,10 +42,18 @@ def parse_array(value):
             nested_array = parse_array(match_array.group())
             array_elem.append(nested_array)
             pos += len(match_array.group())
-        elif match_nested_array:
-            nested_array = parse_array(match_nested_array.group())
-            array_elem.append(nested_array)
-            pos += len(match_nested_array.group())
+        elif match_const:
+            const_name = match_const.group(1)
+            if const_name not in constants:
+                raise SyntaxError(f"Неопределённая константа: {const_name}")
+            const_value = constants[const_name]
+            if re.match(ARRAY, const_value):
+                nested_array = parse_array(const_value)
+                array_elem.append(nested_array)
+            else:
+                item_elem = parse_value(const_value)
+                array_elem.append(item_elem)
+            pos += len(match_const.group())
         else:
             raise SyntaxError(f"Неизвестный синтаксис в массиве: {inner_values[pos:]}")
 
@@ -54,6 +66,11 @@ def parse_array(value):
 def parse_value(value):
     if re.match(ARRAY, value):
         return parse_array(value)
+    elif re.match(CONST_EVALUATION, value):
+        const_name = re.match(CONST_EVALUATION, value).group(1)
+        if const_name not in constants:
+            raise SyntaxError(f"Неопределённая константа: {const_name}")
+        return parse_value(constants[const_name])
     elif re.match(STRING, f'"{value}"') or isinstance(value, str):
         str_elem = ET.Element("string")
         str_elem.text = value.strip('"')
@@ -63,7 +80,7 @@ def parse_value(value):
         num_elem.text = value
         return num_elem
     else:
-        raise SyntaxError(f"Unknown syntax or undefined constant: {value}")
+        raise SyntaxError(f"Неизвестный синтаксис: {value}")
 
 
 def parse_config(input_text):
