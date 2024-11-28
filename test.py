@@ -53,7 +53,7 @@ class TestParseConfig(unittest.TestCase):
         self.assertEqual(items[2].text, "cherry")
 
     def test_parse_nested_array(self):
-        config = '(def array #( "outer" #("inner1" "inner2") "outer2" ));'
+        config = '(def style #("красный" "зеленый" "синий" ?{colors}));'
         xml_root = parse_config(config)
         outer_array_elem = xml_root.find(".//array")
         self.assertIsNotNone(outer_array_elem)

@@ -15,8 +15,11 @@ CONST_EVALUATION2 = r"#\(\s*\?\{([_a-zA-Z][_a-zA-Z0-9]*)\}\s*\)"
 constants = {}
 
 
-def parse_array(value):
+def parse_array(value, name=None):
     array_elem = ET.Element("array")
+
+    if name:
+        array_elem.set("name", name)
 
     inner_values = value[2:-1].strip()
 
@@ -36,7 +39,7 @@ def parse_array(value):
             item_elem.text = match_num.group()
             pos += len(match_num.group())
         elif match_array:
-            nested_array = parse_array(match_array.group())
+            nested_array = parse_array(match_array.group(), )
             array_elem.append(nested_array)
             pos += len(match_array.group())
         elif match_const:
@@ -45,7 +48,7 @@ def parse_array(value):
                 raise SyntaxError(f"Неопределённая константа: {const_name}")
             const_value = constants[const_name]
             if re.match(ARRAY, const_value):
-                nested_array = parse_array(const_value)
+                nested_array = parse_array(const_value, const_name)
                 array_elem.append(nested_array)
             else:
                 item_elem = parse_value(const_value)
@@ -96,8 +99,8 @@ def parse_config(input_text):
         if const_decl:
             name, value = const_decl.groups()
             constants[name] = value.strip('"')
-            #const_elem = ET.SubElement(xml_root, "constant", name=name)
-            #const_elem.append(parse_value(value))
+            # const_elem = ET.SubElement(xml_root, "constant", name=name)
+            # const_elem.append(parse_value(value))
             continue
 
         const_eval = re.match(CONST_EVALUATION2, line)
@@ -123,8 +126,8 @@ def parse_config(input_text):
             str_elem = ET.SubElement(xml_root, "string")
             str_elem.text = line.strip('"')
         else:
-            continue
-            # raise SyntaxError(f"Unknown syntax: {line}")
+            # continue
+            raise SyntaxError(f"Unknown syntax: {line}")
 
 
 
