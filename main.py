@@ -10,17 +10,14 @@ STRING = r"\"([^\"]*)\""
 NUMBER = r"\b\d+\b"
 CONST_DECLARATION = r"\(def\s+([_a-zA-Z][_a-zA-Z0-9]*)\s+(.*)\);"
 CONST_EVALUATION = r"\?\{([_a-zA-Z][_a-zA-Z0-9]*)\}"
+CONST_EVALUATION2 = r"#\(\s*\?\{([_a-zA-Z][_a-zA-Z0-9]*)\}\s*\)"
 
 constants = {}
 
 
 def parse_array(value):
-    """
-    Парсинг массивов с поддержкой вложенных массивов и ссылок на константы.
-    """
     array_elem = ET.Element("array")
 
-    # Убираем оболочку массива #( ... )
     inner_values = value[2:-1].strip()
 
     pos = 0
@@ -72,11 +69,11 @@ def parse_value(value):
             raise SyntaxError(f"Неопределённая константа: {const_name}")
         return parse_value(constants[const_name])
     elif re.match(STRING, f'"{value}"') or isinstance(value, str):
-        str_elem = ET.Element("string")
+        str_elem = ET.Element("item")
         str_elem.text = value.strip('"')
         return str_elem
     elif re.match(NUMBER, value):
-        num_elem = ET.Element("number")
+        num_elem = ET.Element("item")
         num_elem.text = value
         return num_elem
     else:
@@ -99,11 +96,11 @@ def parse_config(input_text):
         if const_decl:
             name, value = const_decl.groups()
             constants[name] = value.strip('"')
-            const_elem = ET.SubElement(xml_root, "constant", name=name)
-            const_elem.append(parse_value(value))
+            #const_elem = ET.SubElement(xml_root, "constant", name=name)
+            #const_elem.append(parse_value(value))
             continue
 
-        const_eval = re.match(CONST_EVALUATION, line)
+        const_eval = re.match(CONST_EVALUATION2, line)
         if const_eval:
             name = const_eval.group(1)
             value = constants.get(name, "undefined")
@@ -126,7 +123,10 @@ def parse_config(input_text):
             str_elem = ET.SubElement(xml_root, "string")
             str_elem.text = line.strip('"')
         else:
-            raise SyntaxError(f"Unknown syntax: {line}")
+            continue
+            # raise SyntaxError(f"Unknown syntax: {line}")
+
+
 
     return xml_root
 
