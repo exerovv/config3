@@ -1,6 +1,4 @@
 (def db_host "localhost");
 (def db_port 5432);
-(def db_params #("ssl" "enabled" "max_connections" 100));
-?{db_host}
-?{db_port}
-?{db_params}
+(def db_params #("ssl" "enabled" "max_connections" 100 ?{db_port}));
+#(  ?{db_host} ?{db_port} ?{db_params} )

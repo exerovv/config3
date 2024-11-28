@@ -2,5 +2,5 @@
 (def font_size 12);
 --[[ Комментарий:
 Этот массив содержит цвета для темы ]]
-#(  "black" "grey" "white"  )
+#(  "black" "grey" "white" ?{theme} )
 
